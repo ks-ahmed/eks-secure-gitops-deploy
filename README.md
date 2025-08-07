@@ -53,13 +53,14 @@ terraform apply
 
    - Amazon EKS cluster
    - IAM roles, networking, and security groups
-   - ArgoCD namespace and initial resources (if defined in modules)
+   - ArgoCD namespace and initial resources 
 
 ## 3. Build and test the app locally (optional)
 
-```cd ../app
-docker build -t eks-static-site .
-docker run -p 3000:3000 eks-static-site
+```
+cd ../app
+docker build -t eks-app .
+docker run -p 3000:3000 eks-app
 ```
 Open http://localhost:3000 in your browser.
 
