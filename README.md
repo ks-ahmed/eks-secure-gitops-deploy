@@ -68,7 +68,7 @@ Open http://localhost:3000 in your browser.
 ## Security & Best Practice
 
 - EKS security groups and IAM roles are defined via Terraform  
-- Docker image uses a minimal base (`python:3.11-slim`)  
+- Docker image uses a minimal base (`python:3.11-alpine`)  
 - `.dockerignore` and `.gitignore` included to reduce build context and exposure
 
 
