@@ -30,9 +30,8 @@ Thumbs.db
 *.swo
 *.bak
 
-Dockerfile
 .dockerignore
 
-
+Dockerfile
 dist/
 build/
