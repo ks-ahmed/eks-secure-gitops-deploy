@@ -1,6 +1,6 @@
 # eks-secure-gitops-deploy
 
-This project sets up a secure, GitOps-based deployment workflow on Amazon EKS using [ArgoCD](https://argo-cd.readthedocs.io/).
+Welcome to this EKS secure GitOps-based deployment workflow on Amazon EKS using [ArgoCD](https://argo-cd.readthedocs.io/).
 
 It includes a static website served from a lightweight Python container, with infrastructure provisioned using Terraform. The aim is to demonstrate secure, reproducible application delivery through Git-based automation and containerisation.
 
