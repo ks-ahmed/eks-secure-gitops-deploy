@@ -25,7 +25,7 @@ Make sure the following tools are installed and configured:
 - [Terraform](https://developer.hashicorp.com/terraform)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
-- [ArgoCD CLI (optional)](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
+- [ArgoCD](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
 
 ---
 
