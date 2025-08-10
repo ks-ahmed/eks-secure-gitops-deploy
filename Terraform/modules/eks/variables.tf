@@ -63,3 +63,11 @@ variable "worker_node_cidr" {
   description = "CIDR block(s) used by worker nodes to allow communication with EKS control plane"
   type        = list(string)
 }
+
+locals {
+  common_tags = {
+    Project = var.name
+    Owner   = "DevOps"
+    Name    = var.name
+  }
+}
