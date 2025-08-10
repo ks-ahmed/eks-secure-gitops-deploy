@@ -18,4 +18,8 @@ module "eks" {
   private_subnet_ids   = module.vpc.private_subnet_ids
   eks_cluster_role_arn = module.iam.eks_cluster_role_arn
   eks_node_role_arn    = module.iam.eks_node_role_arn
+  worker_node_cidr    = var.private_subnet_cidrs
+  vpc_id              = module.vpc.vpc_id
+
+
 }

@@ -1,0 +1,26 @@
+provider: aws
+
+env:
+  - name: AWS_DEFAULT_REGION
+    value: eu-west-2
+
+serviceAccount:
+  create: false        # since you use an existing SA with IRSA
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::528757784671:role/external-dns
+
+domainFilters:
+  - k8s.yacquub.com
+
+rbac:
+  create: true          # ensure RBAC is enabled if not done elsewhere
+
+logLevel: info
+
+sources:
+  - service
+  - ingress
+
+policy: sync
+registry: txt
+txtOwnerId: external-dns
