@@ -1,0 +1,48 @@
+server:
+  service:
+    type: LoadBalancer
+
+controller:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+repoServer:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 150m
+      memory: 256Mi
+
+dex:
+  enabled: false
+
+configs:
+  cm:
+    admin.enabled: "true"
+  secrets:
+    admin.password: 
+
+rbac:
+  policy:
+    - p, role:admin, applications, *, */*, allow
+  defaultRole: role:admin
+  scopes: '[ "api", "repo", "login" ]'
+
+resourceCustomizations:
+  configManagementPlugin:
+    ignoreDifferences:
+      - group: argoproj.io
+        kind: Application
+        jsonPointers:
+          - /status
+
+metrics:
+  enabled: true
