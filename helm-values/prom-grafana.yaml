@@ -9,6 +9,8 @@ prometheus:
       limits:
         cpu: 1000m
         memory: 2Gi
+    service:
+      type: ClusterIP   # Expose via Ingress, no LoadBalancer
     serviceMonitorSelectorNilUsesHelmValues: false
 
 alertmanager:
@@ -21,13 +23,15 @@ alertmanager:
       limits:
         cpu: 500m
         memory: 1Gi
+    service:
+      type: ClusterIP   # Expose via Ingress if needed
 
 grafana:
   enabled: true
   adminUser: admin
-  adminPassword: 
+  adminPassword: ""  # Set strong password securely (secret recommended)
   service:
-    type: LoadBalancer
+    type: ClusterIP   # ClusterIP as ingress handles external access
   resources:
     requests:
       cpu: 100m

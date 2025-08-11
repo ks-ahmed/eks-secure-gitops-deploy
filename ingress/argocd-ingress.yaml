@@ -1,29 +1,26 @@
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd-server-custom
+  name: argocd-server-ingress
   namespace: argocd
   annotations:
-    nginx.org/hsts: "false"
-    cert-manager.io/cluster-issuer: issuer
-  labels:
-    app.kubernetes.io/name: argocd-server
-    app.kubernetes.io/part-of: argocd
+    kubernetes.io/ingress.class: "nginx"              
+    cert-manager.io/cluster-issuer: issuer           
+    nginx.ingress.kubernetes.io/hsts: "false"          
 spec:
   ingressClassName: nginx
   rules:
-  - host: argocd.labs.vettlyai.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: argocd-server
-            port:
-              number: 443
+    - host: argocd.labs.vettlyai.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
   tls:
-  - hosts:
-    - argocd.labs.vettlyai.com
-    secretName: wildcard-tls
+    - hosts:
+        - argocd.labs.vettlyai.com
+      secretName: argocd-tls-secret                       
