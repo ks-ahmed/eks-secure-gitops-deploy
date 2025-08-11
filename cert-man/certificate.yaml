@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-labs-tls
+  namespace: cert-manager   
+spec:
+  secretName: wildcard-tls  
+  dnsNames:
+    - "*.labs.vettlyai.com"
+  issuerRef:
+    name: issuer
+    kind: ClusterIssuer
