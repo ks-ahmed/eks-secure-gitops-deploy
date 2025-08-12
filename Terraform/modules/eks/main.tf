@@ -24,7 +24,7 @@ resource "aws_security_group" "eks_cluster_sg" {
     }
   }
 
-tags = var.common_tags
+  tags = var.common_tags
 }
 
 resource "aws_security_group" "eks_node_sg" {
@@ -54,7 +54,7 @@ resource "aws_security_group" "eks_node_sg" {
     }
   }
 
-tags = var.common_tags
+  tags = var.common_tags
 }
 
 resource "aws_eks_cluster" "this" {
@@ -72,6 +72,17 @@ resource "aws_eks_cluster" "this" {
   }
 }
 
+# Create OIDC provider for IRSA
+data "tls_certificate" "oidc_thumbprint" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "oidc" {
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.oidc_thumbprint.certificates[0].sha1_fingerprint]
+}
+
 resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.name}-nodes"
@@ -87,7 +98,7 @@ resource "aws_eks_node_group" "this" {
   instance_types = [var.node_instance_type]
   ami_type       = "AL2_x86_64"
   capacity_type  = "ON_DEMAND"
-  
+
   depends_on = [
     aws_eks_cluster.this
   ]

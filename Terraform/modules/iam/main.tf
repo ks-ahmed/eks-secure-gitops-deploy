@@ -37,7 +37,6 @@ resource "aws_iam_role" "eks_node" {
 resource "aws_iam_role_policy_attachment" "worker_node_policies" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   ])
 

@@ -23,3 +23,7 @@ output "node_group_name" {
   description = "EKS Node group name"
   value       = aws_eks_node_group.this.node_group_name
 }
+
+output "oidc_provider_arn" {
+  value = aws_iam_openid_connect_provider.oidc.arn
+}
