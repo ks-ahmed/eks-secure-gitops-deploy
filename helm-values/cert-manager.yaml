@@ -11,7 +11,8 @@ resources:
     memory: 256Mi
 
 serviceAccount:
-  create: true
+  create: false
+  name: cert-manager-sa  # Created by Terraform IRSA
 
 webhook:
   enabled: true

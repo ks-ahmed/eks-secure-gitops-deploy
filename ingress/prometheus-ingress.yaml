@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: prometheus.labs.mustafamirreh.com
+    - host: prometheus.labs.vettlyai.com
       http:
         paths:
           - path: /
@@ -22,5 +22,5 @@ spec:
                   number: 9090
   tls:
     - hosts:
-        - prometheus.labs.mustafamirreh.com
+        - prometheus.labs.vettlyai.com
       secretName: wildcard-tls

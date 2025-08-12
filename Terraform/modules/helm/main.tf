@@ -7,8 +7,11 @@ resource "helm_release" "nginx_ingress" {
   create_namespace = true
   timeout          = 300
 
-  depends_on = [module.eks]
+  depends_on = [
+    module.eks
+  ]
 }
+
 
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
@@ -24,12 +27,12 @@ resource "helm_release" "cert_manager" {
   }
 
   values = [
-  file("${path.module}/helm-values/cert-manager.yaml")
-]
-
+    file("${path.module}/helm-values/cert-manager.yaml")
+  ]
 
   depends_on = [
-    helm_release.nginx_ingress
+    helm_release.nginx_ingress,
+    module.cert_manager_irsa_role
   ]
 }
 
@@ -43,8 +46,8 @@ resource "helm_release" "external_dns" {
   timeout          = 300
 
   values = [
-  file("${path.module}/helm-values/external-dns.yaml")
-]
+    file("${path.module}/helm-values/external-dns.yaml")
+  ]
 
   depends_on = [
     helm_release.nginx_ingress,
@@ -52,21 +55,23 @@ resource "helm_release" "external_dns" {
   ]
 }
 
+
 resource "helm_release" "argocd" {
-  name       = "argocd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  namespace  = "argocd"
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = "argocd"
   create_namespace = true
 
   values = [
     file("${path.module}/helm-values/argo-cd.yaml")
   ]
 
-  depends_on = [aws_eks_node_group.this]
+  depends_on = [
+    aws_eks_node_group.this,
+    helm_release.nginx_ingress
+  ]
 }
-
-
 
 resource "helm_release" "kube_prom_stack" {
   name             = "monitoring-stack"
@@ -77,9 +82,8 @@ resource "helm_release" "kube_prom_stack" {
   timeout          = 600
 
   values = [
-  file("${path.module}/helm-values/prom-grafana.yaml")
-]
-
+    file("${path.module}/helm-values/prom-grafana.yaml")
+  ]
 
   depends_on = [
     helm_release.nginx_ingress,

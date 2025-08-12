@@ -1,6 +1,10 @@
 server:
   service:
-    type: ClusterIP  
+    type: ClusterIP
+
+  serviceAccount:
+    create: false       
+    name: argocd-server 
 
 controller:
   replicaCount: 2
@@ -28,7 +32,7 @@ configs:
   cm:
     admin.enabled: "true"
   secrets:
-    admin.password: 
+    admin.password: ""
 
 rbac:
   policy:

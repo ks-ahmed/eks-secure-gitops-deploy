@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: grafana.labs.mustafamirreh.com
+    - host: grafana.labs.vettlyai.com
       http:
         paths:
           - path: /
@@ -23,5 +23,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - grafana.labs.mustafamirreh.com
+        - grafana.labs.vettlyai.com
       secretName: wildcard-tls

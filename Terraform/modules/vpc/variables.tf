@@ -1,16 +1,11 @@
 variable "name" {
-  description = "Project or environment name prefix"
+  description = "Base name for resources"
   type        = string
 }
 
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
-}
-
-variable "azs" {
-  description = "List of availability zones"
-  type        = list(string)
 }
 
 variable "public_subnets" {
@@ -21,4 +16,15 @@ variable "public_subnets" {
 variable "private_subnets" {
   description = "List of private subnet CIDRs"
   type        = list(string)
+}
+
+variable "azs" {
+  description = "List of availability zones"
+  type        = list(string)
+}
+
+variable "common_tags" {
+  description = "Map of common tags to apply to all resources"
+  type        = map(string)
+  default     = {}
 }

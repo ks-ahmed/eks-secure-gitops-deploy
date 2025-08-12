@@ -6,8 +6,7 @@ env:
 
 serviceAccount:
   create: false
-  annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::528757784671:role/external-dns
+  name: external-dns-sa  # Created by Terraform IRSA
 
 domainFilters:
   - k8s.vettlyai.com
