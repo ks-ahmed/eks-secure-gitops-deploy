@@ -7,10 +7,14 @@ on:
         description: 'Type "yes" to confirm deployment'
         required: true
         default: 'no'
+      image_tag:
+        description: 'Docker image tag (short commit SHA) to deploy'
+        required: true
 
 env:
   AWS_REGION: eu-west-2
   EKS_CLUSTER_NAME: eks-proj
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
   kubernetes-deploy:
@@ -19,7 +23,7 @@ jobs:
       - name: Check confirmation input
         run: |
           if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
-            echo "❌ Deployment cancelled."
+            echo "Deployment cancelled."
             exit 1
           fi
 
@@ -28,8 +32,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Set IMAGE_TAG based on commit SHA
-        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+      - name: Set IMAGE_TAG from input
+        run: echo "IMAGE_TAG=${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -42,12 +46,13 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Deploy Kubernetes manifests with updated image tag
+      - name: Replace image tag in manifests
         run: |
-          # Replace image tag in your manifests dynamically if needed, example:
-          # sed -i "s|image: .*/eks-project:.*|image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/eks-project:${IMAGE_TAG}|g" ./k8s-deployment.yaml
+          sed -i "s|\(image: .*eks-project:\).*|\1${IMAGE_TAG}|g" ./argocd/apps/2048.yml
+          # Add more sed commands if you have other manifests referencing the image tag
 
-          # Or apply your manifests directly if they reference the image tag as a variable:
+      - name: Deploy Kubernetes manifests
+        run: |
           kubectl apply -f cert-man/issuer.yml
           kubectl apply -f argocd/app-argo.yml
           kubectl apply -f argocd/apps/2048.yml
