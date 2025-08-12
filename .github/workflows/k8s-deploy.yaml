@@ -1,0 +1,53 @@
+name: Kubernetes Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type "yes" to confirm deployment'
+        required: true
+        default: 'no'
+
+env:
+  AWS_REGION: eu-west-2
+  EKS_CLUSTER_NAME: eks-proj
+
+jobs:
+  kubernetes-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation input
+        run: |
+          if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
+            echo "❌ Deployment cancelled."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set IMAGE_TAG based on commit SHA
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS cluster
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Deploy Kubernetes manifests with updated image tag
+        run: |
+          # Replace image tag in your manifests dynamically if needed, example:
+          # sed -i "s|image: .*/eks-project:.*|image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/eks-project:${IMAGE_TAG}|g" ./k8s-deployment.yaml
+
+          # Or apply your manifests directly if they reference the image tag as a variable:
+          kubectl apply -f cert-man/issuer.yml
+          kubectl apply -f argocd/app-argo.yml
+          kubectl apply -f argocd/apps/2048.yml
