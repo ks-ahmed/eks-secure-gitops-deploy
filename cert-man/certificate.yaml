@@ -1,12 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: wildcard-labs-tls
-  namespace: cert-manager
+  name: wildcard-tls
+  namespace: apps
 spec:
   secretName: wildcard-tls
   dnsNames:
     - "*.labs.vettlyai.com"
+    - "argocd.labs.vettlyai.com"
     - "grafana.labs.vettlyai.com"
     - "prometheus.labs.vettlyai.com"
   issuerRef:

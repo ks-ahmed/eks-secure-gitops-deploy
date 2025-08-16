@@ -34,3 +34,8 @@ variable "region" {
   type        = string
   default     = "eu-west-2"
 }
+
+variable "image_tag" {
+  type = string
+  description = "Docker image tag to deploy"
+}
