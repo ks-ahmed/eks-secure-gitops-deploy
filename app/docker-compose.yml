@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  myapp:
+    build: .
+    ports:
+      - "3000:3000"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: game-2048
-          image: <YOUR_IMAGE_HERE>
+          image: eksapp:local
           ports:
             - containerPort: 3000
 ---
