@@ -1,0 +1,4 @@
+resources:
+  - 2048.yaml
+  - grafana-prom.yaml
+  - shared-ingress.yaml
