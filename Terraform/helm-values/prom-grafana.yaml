@@ -1,0 +1,31 @@
+prometheus:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations:
+      nginx.org/hsts: "false"
+      cert-manager.io/cluster-issuer: "issuer"
+    hosts:
+      - prometheus.labs.vettlyai.com
+    tls:
+      - hosts:
+          - prometheus.labs.vettlyai.com
+        secretName: wildcard-tls
+
+grafana:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations:
+      nginx.org/hsts: "false"
+      cert-manager.io/cluster-issuer: "issuer"
+    hosts:
+      - grafana.labs.vettlyai.com
+    tls:
+      - hosts:
+          - grafana.labs.vettlyai.com
+        secretName: wildcard-tls

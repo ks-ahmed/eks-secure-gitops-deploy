@@ -1,0 +1,13 @@
+crds:
+  enabled: true
+
+extraArgs:
+  - --dns01-recursive-nameservers="8.8.8.8:53"
+  - --dns01-recursive-nameservers-only
+
+serviceAccount:
+  create: true
+  name: cert-manager
+  annotations:
+    # Use the IRSA role ARN from Terraform
+    eks.amazonaws.com/role-arn: "${cert_manager_role_arn}"

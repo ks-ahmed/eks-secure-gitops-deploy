@@ -1,0 +1,15 @@
+provider: aws
+env:
+  - name: AWS_DEFAULT_REGION
+    value: eu-west-2
+
+serviceAccount:
+  create: true
+  name: external-dns
+  annotations:
+    # Use the IRSA role ARN from Terraform
+    eks.amazonaws.com/role-arn: "${external_dns_role_arn}"
+
+domainFilters:
+  - labs.vettlyai.com
+  - k8s.vettlyai.com

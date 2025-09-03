@@ -1,0 +1,27 @@
+server:
+  extraArgs:
+    - --insecure
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "issuer"
+    hosts:
+      - labs.vettlyai.com
+      - k8s.vettlyai.com
+    tls:
+      - hosts:
+          - labs.vettlyai.com
+          - k8s.vettlyai.com
+        secretName: wildcard-tls
+
+configs:
+  cm:
+    admin.enabled: "true"
+  rbac:
+    defaultPolicy: role:admin
+
+global:
+  domain: labs.vettlyai.com

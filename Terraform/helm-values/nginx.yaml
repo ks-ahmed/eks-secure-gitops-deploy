@@ -1,0 +1,15 @@
+controller:
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+  ingressClassResource:
+    default: true
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    tls:
+      - hosts:
+          - "*.labs.vettlyai.com"
+          - "*.k8s.vettlyai.com"
+        secretName: "wildcard-tls"

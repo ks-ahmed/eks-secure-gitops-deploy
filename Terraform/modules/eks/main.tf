@@ -1,109 +1,111 @@
-    resource "aws_security_group" "eks_cluster_sg" {
-      name        = "${var.name}-eks-cluster-sg"
-      description = "Security group for EKS cluster control plane"
-      vpc_id      = var.vpc_id
+# ---------------------------
+# Security Groups
+# ---------------------------
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = "${var.name}-eks-cluster-sg"
+  description = "EKS control plane SG"
+  vpc_id      = var.vpc_id
 
-      dynamic "ingress" {
-        for_each = var.eks_cluster_sg_ingress_rules
-        content {
-          from_port   = ingress.value.from_port
-          to_port     = ingress.value.to_port
-          protocol    = ingress.value.protocol
-          description = ingress.value.description
-          cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-        }
-      }
+  ingress {
+    description = "Allow worker nodes to communicate with cluster"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = var.private_subnet_cidrs
+  }
 
-      dynamic "egress" {
-        for_each = var.egress_rules
-        content {
-          from_port   = egress.value.from_port
-          to_port     = egress.value.to_port
-          protocol    = egress.value.protocol
-          cidr_blocks = egress.value.cidr_blocks
-        }
-      }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-      tags = var.common_tags
-    }
+  tags = merge(var.common_tags, { Name = "${var.name}-eks-cluster-sg" })
+}
 
-    resource "aws_security_group" "eks_node_sg" {
-      name        = "${var.name}-eks-node-sg"
-      description = "Security group for EKS worker nodes"
-      vpc_id      = var.vpc_id
+resource "aws_security_group" "eks_node_sg" {
+  name        = "${var.name}-eks-node-sg"
+  description = "EKS worker nodes SG"
+  vpc_id      = var.vpc_id
 
-      dynamic "ingress" {
-        for_each = var.eks_node_sg_ingress_rules
-        content {
-          from_port   = ingress.value.from_port
-          to_port     = ingress.value.to_port
-          protocol    = ingress.value.protocol
-          description = ingress.value.description
-          cidr_blocks = lookup(ingress.value, "cidr_blocks", null)
-          self        = lookup(ingress.value, "self", null)
-        }
-      }
+  ingress {
+    description = "Allow node to node communication"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
+  }
 
-      dynamic "egress" {
-        for_each = var.egress_rules
-        content {
-          from_port   = egress.value.from_port
-          to_port     = egress.value.to_port
-          protocol    = egress.value.protocol
-          cidr_blocks = egress.value.cidr_blocks
-        }
-      }
+  ingress {
+    description = "Allow nodes to communicate with control plane"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = var.private_subnet_cidrs
+  }
 
-      tags = var.common_tags
-    }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-    resource "aws_eks_cluster" "this" {
-      name     = var.name
-      version  = var.cluster_version
-      role_arn = var.eks_cluster_role_arn
+  tags = merge(var.common_tags, { Name = "${var.name}-eks-node-sg" })
+}
 
-      vpc_config {
-        subnet_ids         = var.private_subnet_ids
-        security_group_ids = [aws_security_group.eks_cluster_sg.id]
-      }
+# ---------------------------
+# EKS Cluster
+# ---------------------------
+resource "aws_eks_cluster" "this" {
+  name     = var.name
+  version  = var.cluster_version
+  role_arn = var.eks_cluster_role_arn
 
-      tags = {
-        Project = var.name
-      }
-    }
+  vpc_config {
+    subnet_ids         = var.private_subnet_ids
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
+  }
 
-    # Create OIDC provider for IRSA
-    data "tls_certificate" "oidc_thumbprint" {
-      url = aws_eks_cluster.this.identity[0].oidc[0].issuer
-    }
+  tags = merge(var.common_tags, { Project = var.name })
+}
 
-    resource "aws_iam_openid_connect_provider" "oidc" {
-      url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
-      client_id_list  = ["sts.amazonaws.com"]
-      thumbprint_list = [data.tls_certificate.oidc_thumbprint.certificates[0].sha1_fingerprint]
-    }
+# ---------------------------
+# OIDC Provider for IRSA
+# ---------------------------
+data "tls_certificate" "oidc_thumbprint" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
 
-    resource "aws_eks_node_group" "this" {
-      cluster_name    = aws_eks_cluster.this.name
-      node_group_name = "${var.name}-nodes"
-      node_role_arn   = var.eks_node_role_arn
-      subnet_ids      = var.private_subnet_ids
+resource "aws_iam_openid_connect_provider" "oidc" {
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.oidc_thumbprint.certificates[0].sha1_fingerprint]
+}
 
-      scaling_config {
-        desired_size = var.desired_capacity
-        max_size     = var.max_size
-        min_size     = var.min_size
-      }
+# ---------------------------
+# EKS Node Group
+# ---------------------------
+resource "aws_eks_node_group" "this" {
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "${var.name}-nodes"
+  node_role_arn   = var.eks_node_role_arn
+  subnet_ids      = var.private_subnet_ids
 
-      instance_types = [var.node_instance_type]
-      ami_type       = "AL2_x86_64"
-      capacity_type  = "ON_DEMAND"
+  scaling_config {
+    desired_size = var.desired_capacity
+    max_size     = var.max_size
+    min_size     = var.min_size
+  }
 
-      depends_on = [
-        aws_eks_cluster.this
-      ]
+  instance_types = [var.node_instance_type]
+  ami_type       = "AL2_x86_64"
+  capacity_type  = "ON_DEMAND"
 
-      tags = {
-        Project = var.name
-      }
-    }
+  tags = merge(var.common_tags, { Project = var.name })
+
+  depends_on = [
+    aws_eks_cluster.this
+  ]
+}
