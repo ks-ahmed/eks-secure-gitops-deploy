@@ -17,9 +17,12 @@ spec:
     spec:
       containers:
         - name: game-2048
-          image: your-docker-image:latest
+          image: 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp:latest
           ports:
-            - containerPort: 80
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: ecr-secret
+
 
 ---
 apiVersion: v1
@@ -31,6 +34,6 @@ spec:
   selector:
     app: game-2048
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 80          # what Ingress sees
+      targetPort: 3000  # what container listens on
   type: ClusterIP

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: landing-page-html
+  namespace: default
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Labs Portal</title>
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+          h1 { color: #333; }
+          .links { margin: 20px; }
+          a { display: block; margin: 10px; font-size: 18px; text-decoration: none; color: #007bff; }
+          a:hover { text-decoration: underline; }
+        </style>
+      </head>
+      <body>
+        <h1>Welcome to Labs</h1>
+        <div class="links">
+          <a href="https://2048.labs.vettlyai.com">🎮 Play 2048</a>
+          <a href="https://grafana.labs.vettlyai.com">📊 Grafana</a>
+          <a href="https://prometheus.labs.vettlyai.com">📈 Prometheus</a>
+          <a href="https://argocd.labs.vettlyai.com">🚀 ArgoCD</a>
+        </div>
+      </body>
+    </html>

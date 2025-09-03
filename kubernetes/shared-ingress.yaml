@@ -99,4 +99,4 @@ spec:
               service:
                 name: game-2048
                 port:
-                  number: 80
+                  number: 3000

@@ -1,2 +1,4 @@
 resources:
   - app.yaml
+  - landing-page-app.yaml
+
