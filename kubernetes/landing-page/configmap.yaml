@@ -2,28 +2,207 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: landing-page-html
-  namespace: default
+  namespace: landing-page
 data:
   index.html: |
     <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Labs Portal</title>
-        <style>
-          body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-          h1 { color: #333; }
-          .links { margin: 20px; }
-          a { display: block; margin: 10px; font-size: 18px; text-decoration: none; color: #007bff; }
-          a:hover { text-decoration: underline; }
-        </style>
-      </head>
-      <body>
-        <h1>Welcome to Labs</h1>
-        <div class="links">
-          <a href="https://2048.labs.vettlyai.com">🎮 Play 2048</a>
-          <a href="https://grafana.labs.vettlyai.com">📊 Grafana</a>
-          <a href="https://prometheus.labs.vettlyai.com">📈 Prometheus</a>
-          <a href="https://argocd.labs.vettlyai.com">🚀 ArgoCD</a>
-        </div>
-      </body>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Labs AI Portal</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body, html {
+          margin: 0;
+          padding: 0;
+          font-family: 'Roboto', sans-serif;
+          height: 100%;
+          overflow-x: hidden;
+          color: #ffffff;
+          background: #0f2027;
+        }
+
+        /* Canvas for particles */
+        #particles-js {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+        }
+
+        header {
+          text-align: center;
+          padding: 60px 20px 30px 20px;
+        }
+
+        header h1 {
+          font-size: 3em;
+          margin-bottom: 10px;
+          color: #ffcc00;
+          text-shadow: 1px 1px 8px rgba(0,0,0,0.7);
+        }
+
+        header p {
+          font-size: 1.2em;
+          max-width: 800px;
+          margin: 0 auto;
+          line-height: 1.6;
+          color: #f0f0f0;
+        }
+
+        /* Tech labels */
+        .tech-labels {
+          text-align: center;
+          margin: 30px 0;
+        }
+
+        .tech-labels span {
+          display: inline-block;
+          padding: 8px 15px;
+          border-radius: 20px;
+          margin: 5px;
+          font-weight: 500;
+          font-size: 0.9em;
+          background: linear-gradient(270deg, #ff7f50, #1e90ff, #32cd32, #ff7f50);
+          background-size: 800% 800%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: gradientGlow 10s ease infinite;
+        }
+
+        @keyframes gradientGlow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        .project-desc {
+          max-width: 900px;
+          margin: 20px auto;
+          font-size: 1.1em;
+          line-height: 1.6;
+          background: rgba(255,255,255,0.05);
+          padding: 25px 30px;
+          border-radius: 15px;
+          box-shadow: 0 0 15px #00000033;
+        }
+
+        .links {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin: 50px 0;
+          gap: 25px;
+        }
+
+        .card {
+          background: rgba(255,255,255,0.05);
+          border-radius: 15px;
+          width: 200px;
+          height: 120px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          color: #fff;
+          font-size: 1.2em;
+          font-weight: bold;
+          box-shadow: 0 0 10px #00000033;
+          transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+          transform: translateY(-5px) scale(1.05);
+          background: #ffcc00;
+          color: #0f2027;
+          box-shadow: 0 10px 20px #00000066;
+        }
+
+        .card span {
+          font-size: 2em;
+          margin-bottom: 10px;
+        }
+
+        footer {
+          text-align: center;
+          padding: 30px 20px;
+          font-size: 0.9em;
+          color: #dddddd;
+          border-top: 1px solid #ffffff33;
+        }
+
+        @media (max-width: 600px) {
+          .card {
+            width: 90%;
+            height: 100px;
+          }
+          header h1 {
+            font-size: 2em;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div id="particles-js"></div>
+
+      <header>
+        <h1>Labs AI Portal</h1>
+        <p>Welcome to the Labs AI environment! Explore interactive apps, monitor metrics, and manage your EKS Kubernetes cluster efficiently through our GitOps-powered CI/CD pipelines.</p>
+      </header>
+
+      <div class="tech-labels">
+        <span>AWS</span>
+        <span>EKS</span>
+        <span>Kubernetes</span>
+        <span>Terraform</span>
+        <span>GitHub Actions</span>
+        <span>ArgoCD</span>
+        <span>Grafana</span>
+        <span>Prometheus</span>
+      </div>
+
+      <div class="project-desc">
+        <p>This project demonstrates a fully automated, secure, and scalable infrastructure on AWS using EKS and Kubernetes. Deployments are GitOps-driven through ArgoCD, while CI/CD pipelines leverage Terraform and GitHub Actions for continuous provisioning and deployment.</p>
+        <p>Monitoring and observability are integrated using Grafana and Prometheus. All services are accessible via a single AI-centric landing page, making it simple to explore the environment and understand the workflow from code to cloud.</p>
+        <p>Benefits include faster deployment times, infrastructure-as-code management, visibility into system health, and a unified interface for all applications.</p>
+      </div>
+
+      <div class="links">
+        <a href="https://2048.labs.vettlyai.com" class="card"><span>🎮</span>Play 2048</a>
+        <a href="https://grafana.labs.vettlyai.com" class="card"><span>📊</span>Grafana</a>
+        <a href="https://prometheus.labs.vettlyai.com" class="card"><span>📈</span>Prometheus</a>
+        <a href="https://argocd.labs.vettlyai.com" class="card"><span>🚀</span>ArgoCD</a>
+      </div>
+
+      <footer>
+        &copy; 2025 Labs AI Portal | Powered by EKS, Kubernetes & GitOps
+      </footer>
+
+      <!-- Particles.js library -->
+      <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+      <script>
+        particlesJS("particles-js", {
+          "particles": {
+            "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+            "color": { "value": "#ffffff" },
+            "shape": { "type": "circle" },
+            "opacity": { "value": 0.5 },
+            "size": { "value": 2 },
+            "line_linked": { "enable": true, "distance": 120, "color": "#ffffff", "opacity": 0.4, "width": 1 },
+            "move": { "enable": true, "speed": 2 }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" } },
+            "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.6 } }, "push": { "particles_nb": 4 } }
+          },
+          "retina_detect": true
+        });
+      </script>
+    </body>
     </html>

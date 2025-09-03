@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: landing-page
-  namespace: default
+  namespace: landing-page
 spec:
   replicas: 1
   selector:

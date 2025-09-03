@@ -6,13 +6,15 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/your-org/gitops-repo.git'
+    repoURL: https://github.com/ks-ahmed/eks-secure-gitops-deploy
+    targetRevision: HEAD
     path: kubernetes/landing-page
-    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: landing-page
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
