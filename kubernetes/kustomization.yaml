@@ -3,6 +3,6 @@ kind: Kustomization
 
 resources:
   - landing-page
-  - 2048.yaml
+  - game-2048
   - grafana-prom.yaml
   - shared-ingress.yaml
