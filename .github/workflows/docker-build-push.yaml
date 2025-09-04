@@ -61,13 +61,3 @@ jobs:
           echo "$IMAGE_TAG"
           echo "===================================="
 
-      - name: Trigger Terraform Plan Workflow
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          event-type: trigger-terraform-plan
-          client-payload: |
-            {
-              "image_tag": "${{ env.IMAGE_TAG }}"
-            }
