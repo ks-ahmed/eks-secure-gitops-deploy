@@ -1,0 +1,73 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag (short commit SHA)'
+        required: true
+
+  repository_dispatch:
+    types: [trigger-terraform-plan]
+
+env:
+  AWS_REGION: eu-west-2
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.event.inputs.image_tag || github.event.client_payload.image_tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.8
+
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v1
+        with:
+          tflint_version: v0.50.3
+
+      - name: Terraform Init 
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+
+      - name: TFLint Check
+        working-directory: terraform
+        run: tflint
+
+      - name: Terraform Plan
+        working-directory: terraform
+        run: |
+          terraform plan -var="image_tag=${IMAGE_TAG}" -out=tfplan
+          terraform show -no-color tfplan > plan.txt
+
+      - name: Upload tfplan (binary)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
+      - name: Upload plan summary (text)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-summary
+          path: terraform/plan.txt

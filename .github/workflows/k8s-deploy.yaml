@@ -1,58 +1,88 @@
-name: Kubernetes Deploy
+name: Kubernetes Kustomize Multi-Namespace Deploy
 
 on:
   workflow_dispatch:
     inputs:
+      image_tag:
+        description: 'Docker image tag (short commit SHA)'
+        required: true
       confirmation:
-        description: 'Type "yes" to confirm deployment'
+        description: 'Type "yes" to confirm deploy'
         required: true
         default: 'no'
-      image_tag:
-        description: 'Docker image tag (short commit SHA) to deploy'
-        required: true
 
 env:
   AWS_REGION: eu-west-2
-  EKS_CLUSTER_NAME: eks-proj
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  CLUSTER_NAME: my-eks-cluster
+  ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/eksapp
 
 jobs:
-  kubernetes-deploy:
+  deploy:
+    name: Deploy via Kustomize
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check confirmation input
+      - name: Confirm deployment
         run: |
           if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
             echo "Deployment cancelled."
             exit 1
           fi
 
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
 
-      - name: Set IMAGE_TAG from input
-        run: echo "IMAGE_TAG=${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
-
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Update kubeconfig for EKS cluster
-        run: |
-          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      - name: Replace image tag in manifests
+      - name: Install kustomize
         run: |
-          sed -i "s|\(image: .*eks-project:\).*|\1${IMAGE_TAG}|g" ./argocd/apps/2048.yml
-          # Add more sed commands if you have other manifests referencing the image tag
+          curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest \
+            | grep browser_download_url \
+            | grep linux \
+            | cut -d '"' -f 4 \
+            | xargs curl -sL \
+            | tar xz \
+            && sudo mv kustomize /usr/local/bin/
 
-      - name: Deploy Kubernetes manifests
+      - name: Set image in kustomization
         run: |
-          kubectl apply -f cert-man/issuer.yml
-          kubectl apply -f argocd/app-argo.yml
-          kubectl apply -f argocd/apps/2048.yml
+          IMAGE_URI="${ECR_REPO}:${{ github.event.inputs.image_tag }}"
+          echo "Setting image: $IMAGE_URI"
+          kustomize edit set image "eksapp=$IMAGE_URI" --load-restrictor=none --reorder=true
+
+      - name: Deploy with kustomize
+        run: |
+          kustomize build . | kubectl apply -f -
+
+      - name: Wait for all deployments in relevant namespaces
+        run: |
+          namespaces=("default" "landing-page" "argo-cd" "monitoring")
+          for ns in "${namespaces[@]}"; do
+            echo "Checking deployments in namespace: $ns"
+            deployments=$(kubectl get deploy -n $ns -o custom-columns=NAME:.metadata.name --no-headers)
+            for dep in $deployments; do
+              echo "Waiting for rollout of deployment: $dep in $ns"
+              kubectl rollout status deployment/$dep -n $ns --timeout=300s
+            done
+          done
+
+      - name: Wait for TLS certificates
+        run: |
+          echo "Waiting for CertManager certificates to be ready..."
+          namespaces=("default" "landing-page" "argo-cd" "monitoring" "cert-manager")
+          for ns in "${namespaces[@]}"; do
+            certificates=$(kubectl get certificates -n $ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null)
+            for cert in $certificates; do
+              echo "Checking certificate: $cert in namespace: $ns"
+              kubectl wait --for=condition=Ready certificate/$cert -n $ns --timeout=300s
+            done
+          done
+          echo "All certificates are ready!"

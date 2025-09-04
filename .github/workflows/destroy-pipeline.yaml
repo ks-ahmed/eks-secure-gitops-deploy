@@ -1,78 +1,54 @@
-name: Full Destroy Pipeline
+name: Full EKS Teardown
 
 on:
   workflow_dispatch:
-    inputs:
-      confirmation:
-        description: 'Type "yes" to confirm full destruction'
-        required: true
-        default: 'no'
-
-env:
-  AWS_REGION: eu-west-2
-  EKS_CLUSTER_NAME: eks-proj
 
 jobs:
-  cleanup-k8s:
+  teardown:
     runs-on: ubuntu-latest
-    outputs:
-      proceed: ${{ steps.check_confirm.outputs.confirmed }}
-    steps:
-      - id: check_confirm
-        run: |
-          if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
-            echo "confirmed=no" >> $GITHUB_OUTPUT
-            echo "Cleanup cancelled."
-            exit 1
-          else
-            echo "confirmed=yes" >> $GITHUB_OUTPUT
-          fi
 
-      - name: Checkout code
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: eu-west-2
 
-      - name: Update kubeconfig for EKS cluster
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region eu-west-2 --name my-eks-cluster
+
+      - name: Uninstall all Helm releases
         run: |
-          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+          echo "Deleting all Helm releases..."
+          helm list -A -q | while read release; do
+            ns=$(helm list -A --filter "^$release$" -q -o json | jq -r '.[0].Namespace')
+            echo "Uninstalling Helm release $release in namespace $ns"
+            helm uninstall "$release" -n "$ns"
+          done
 
-      - name: Delete Kubernetes resources
+      - name: Delete app-related namespaces
         run: |
-          kubectl delete -f cert-man/issuer.yml || true
-          kubectl delete -f argocd/app-argo.yml || true
-          kubectl delete -f argocd/apps/2048.yml || true
+          namespaces=("default" "landing-page" "argo-cd" "monitoring")
+          for ns in "${namespaces[@]}"; do
+            echo "Deleting all resources in namespace: $ns"
+            kubectl delete all --all -n $ns || true
+            kubectl delete pvc --all -n $ns || true
+            kubectl delete configmap --all -n $ns || true
+            kubectl delete secret --all -n $ns || true
+            echo "Deleting namespace: $ns"
+            kubectl delete namespace $ns || true
+          done
 
+      - name: Destroy Terraform resources
+        run: |
+          terraform destroy -auto-approve || true
+          rm -rf .terraform/ terraform.tfstate terraform.tfstate.backup
 
-  destroy-infra:
-    runs-on: ubuntu-latest
-    needs: cleanup-k8s
-    if: needs.cleanup-k8s.outputs.proceed == 'yes'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.8
-
-      - name: Terraform Init
-        working-directory: terraform
-        run: terraform init
-
-      - name: Terraform Destroy
-        working-directory: terraform
-        run: terraform destroy -auto-approve
+      - name: Delete EKS cluster (optional)
+        run: |
+          echo "Deleting EKS cluster (if still exists)..."
+          aws eks delete-cluster --name my-eks-cluster --region eu-west-2 || true
