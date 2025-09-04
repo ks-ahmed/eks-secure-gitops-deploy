@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/helm"
       version = ">= 2.6"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.19.0"   # Added version constraint
+    }
   }
 }
 
@@ -27,7 +31,6 @@ provider "helm" {
     }
   }
 }
-
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
