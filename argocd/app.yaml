@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/ks-ahmed/eks-secure-gitops-deploy
     targetRevision: HEAD
-    path: kubernetes/game-2048  # <- app folder only
+    path: kubernetes/game-2048  
   destination:
     server: https://kubernetes.default.svc
     namespace: default

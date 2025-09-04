@@ -10,7 +10,7 @@ data:
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Labs AI Portal</title>
+      <title>EKS Kubernetes AI Portal</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
@@ -24,7 +24,6 @@ data:
           background: #0f2027;
         }
 
-        /* Canvas for particles */
         #particles-js {
           position: fixed;
           top: 0;
@@ -39,22 +38,30 @@ data:
           padding: 60px 20px 30px 20px;
         }
 
+        .title-box {
+          display: inline-block;
+          padding: 30px;
+          border: 3px solid #ffcc00;
+          border-radius: 15px;
+          background: linear-gradient(135deg, #1e3c72, #2a5298);
+          box-shadow: 0 0 25px rgba(255, 204, 0, 0.5);
+          max-width: 800px;
+          margin: 0 auto 30px auto;
+        }
+
         header h1 {
-          font-size: 3em;
-          margin-bottom: 10px;
+          font-size: 3.2em;
+          margin: 0 0 15px 0;
           color: #ffcc00;
-          text-shadow: 1px 1px 8px rgba(0,0,0,0.7);
+          text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
         }
 
         header p {
           font-size: 1.2em;
-          max-width: 800px;
-          margin: 0 auto;
           line-height: 1.6;
-          color: #f0f0f0;
+          color: #f9f9f9;
         }
 
-        /* Tech labels */
         .tech-labels {
           text-align: center;
           margin: 30px 0;
@@ -62,22 +69,24 @@ data:
 
         .tech-labels span {
           display: inline-block;
-          padding: 8px 15px;
-          border-radius: 20px;
-          margin: 5px;
-          font-weight: 500;
-          font-size: 0.9em;
-          background: linear-gradient(270deg, #ff7f50, #1e90ff, #32cd32, #ff7f50);
-          background-size: 800% 800%;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: gradientGlow 10s ease infinite;
+          padding: 10px 20px;
+          border-radius: 30px;
+          margin: 8px;
+          font-weight: 600;
+          font-size: 1em;
+          background: #111;
+          color: #fff;
+          border: 2px solid transparent;
+          background-image: linear-gradient(#111, #111), linear-gradient(45deg, #ff7f50, #1e90ff, #32cd32, #ffcc00);
+          background-origin: border-box;
+          background-clip: padding-box, border-box;
+          box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+          transition: transform 0.3s ease;
         }
 
-        @keyframes gradientGlow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+        .tech-labels span:hover {
+          transform: scale(1.1);
+          box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
         }
 
         .project-desc {
@@ -151,8 +160,10 @@ data:
       <div id="particles-js"></div>
 
       <header>
-        <h1>Labs AI Portal</h1>
-        <p>Welcome to the Labs AI environment! Explore interactive apps, monitor metrics, and manage your EKS Kubernetes cluster efficiently through our GitOps-powered CI/CD pipelines.</p>
+        <div class="title-box">
+          <h1>EKS Kubernetes AI Portal</h1>
+          <p>Welcome to the Labs AI environment! Explore interactive apps, monitor metrics, and manage your EKS Kubernetes cluster efficiently through our GitOps-powered CI/CD pipelines.</p>
+        </div>
       </header>
 
       <div class="tech-labels">
@@ -183,7 +194,6 @@ data:
         &copy; 2025 Labs AI Portal | Powered by EKS, Kubernetes & GitOps
       </footer>
 
-      <!-- Particles.js library -->
       <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
       <script>
         particlesJS("particles-js", {
