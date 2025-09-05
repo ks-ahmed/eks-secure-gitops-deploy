@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Type "yes" to confirm deployment'
+        description: 'Type "yes" to confirm image build and push'
         required: true
         default: 'no'
 
@@ -21,7 +21,7 @@ jobs:
       - name: Check confirmation input
         run: |
           if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
-            echo "Deployment cancelled."
+            echo "Image build and push cancelled."
             exit 1
           fi
 
@@ -33,7 +33,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }} 
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         run: |
@@ -60,4 +60,3 @@ jobs:
           echo "Use this IMAGE_TAG in your deploy pipeline:"
           echo "$IMAGE_TAG"
           echo "===================================="
-

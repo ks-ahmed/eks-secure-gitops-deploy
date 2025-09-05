@@ -1,11 +1,7 @@
 name: Terraform Plan
 
 on:
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'Docker image tag (short commit SHA)'
-        required: true
+  workflow_dispatch:  # No inputs needed now
 
 env:
   AWS_REGION: eu-west-2
@@ -14,9 +10,6 @@ jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-
-    env:
-      IMAGE_TAG: ${{ github.event.inputs.image_tag }}
 
     steps:
       - name: Checkout code
@@ -54,14 +47,10 @@ jobs:
       - name: Terraform Plan
         working-directory: terraform
         run: |
-          terraform plan \
-          -var="image_tag=${IMAGE_TAG}" \
-          -out=tfplan
-          
+          terraform plan -out=tfplan
 
       - name: Upload tfplan (binary)
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: terraform/tfplan
-
