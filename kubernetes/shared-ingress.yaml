@@ -91,6 +91,7 @@ metadata:
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: issuer
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
