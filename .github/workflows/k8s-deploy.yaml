@@ -56,7 +56,7 @@ jobs:
         run: |
           IMAGE_URI="${ECR_REPO}:${{ github.event.inputs.image_tag }}"
           echo "Setting image: $IMAGE_URI"
-          kustomize edit set image "eksapp=$IMAGE_URI" --load-restrictor=none --reorder=true
+          kustomize edit set image "eksapp=$IMAGE_URI" 
 
       - name: Deploy with kustomize
         run: |
