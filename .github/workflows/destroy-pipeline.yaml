@@ -46,7 +46,6 @@ jobs:
       - name: Destroy Terraform resources
         run: |
           terraform destroy -auto-approve || true
-          rm -rf .terraform/ terraform.tfstate terraform.tfstate.backup
 
       - name: Delete EKS cluster (optional)
         run: |
