@@ -1,6 +1,4 @@
 server:
-  extraArgs:
-    - --insecure
   service:
     type: ClusterIP
   ingress:
@@ -10,11 +8,9 @@ server:
       cert-manager.io/cluster-issuer: "issuer"
     hosts:
       - argocd.labs.vettlyai.com
-      - k8s.labs.vettlyai.com   # if you still want this too
     tls:
       - hosts:
           - argocd.labs.vettlyai.com
-          - k8s.labs.vettlyai.com
         secretName: wildcard-tls
 
 configs:
