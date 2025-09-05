@@ -1,17 +1,18 @@
 name: Terraform Apply
 
 on:
-  workflow_run:
-    workflows: ["Terraform Plan"]
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type "yes" to confirm apply'
+        required: true
+        default: 'no'
 
 env:
   AWS_REGION: eu-west-2
 
 jobs:
   apply:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +48,7 @@ jobs:
           BUCKET_NAME: eks-secure-gitops-tfstate
         run: |
           aws s3 cp s3://$BUCKET_NAME/tfplan terraform/tfplan
-  
+
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve tfplan 
+        run: terraform apply -auto-approve tfplan
