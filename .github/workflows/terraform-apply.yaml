@@ -1,19 +1,17 @@
 name: Terraform Apply
 
 on:
-  workflow_dispatch:
-    inputs:
-      confirmation:
-        description: 'Type "yes" to confirm apply'
-        required: true
-        default: 'no'
+  workflow_run:
+    workflows: ["Terraform Plan"]
+    types:
+      - completed
 
 env:
   AWS_REGION: eu-west-2
 
 jobs:
   apply:
-    name: Terraform Apply
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
