@@ -1,17 +1,28 @@
-name: Terraform Plan
+name: Terraform Apply
 
 on:
-  workflow_dispatch:  # No inputs needed now
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type "yes" to confirm apply'
+        required: true
+        default: 'no'
 
 env:
   AWS_REGION: eu-west-2
 
 jobs:
-  plan:
-    name: Terraform Plan
+  apply:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
+            echo "Apply cancelled by user."
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -27,30 +38,17 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Set up TFLint
-        uses: terraform-linters/setup-tflint@v1
-        with:
-          tflint_version: v0.50.3
-
-      - name: Terraform Init 
+      - name: Terraform Init
         working-directory: terraform
         run: terraform init
 
-      - name: Terraform Validate
-        working-directory: terraform
-        run: terraform validate
-
-      - name: TFLint Check
-        working-directory: terraform
-        run: tflint
-
-      - name: Terraform Plan
-        working-directory: terraform
+      - name: Download tfplan from S3
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          BUCKET_NAME: eks-secure-gitops-tfstate
         run: |
-          terraform plan -out=tfplan
+          aws s3 cp s3://$BUCKET_NAME/tfplan terraform/tfplan
 
-      - name: Upload tfplan (binary)
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/tfplan
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve tfplan
