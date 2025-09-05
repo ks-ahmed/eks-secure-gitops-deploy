@@ -6,10 +6,10 @@ metadata:
   name: landing-page-ingress
   namespace: landing-page
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - labs.vettlyai.com
@@ -34,10 +34,10 @@ metadata:
   name: argocd-server-ingress
   namespace: argo-cd
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - argocd.labs.vettlyai.com
@@ -62,10 +62,10 @@ metadata:
   name: grafana-ingress
   namespace: monitoring
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - grafana.labs.vettlyai.com
@@ -90,9 +90,9 @@ metadata:
   name: prometheus-ingress
   namespace: monitoring
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: issuer
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - prometheus.labs.vettlyai.com
@@ -117,10 +117,10 @@ metadata:
   name: game-2048-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - 2048.labs.vettlyai.com
