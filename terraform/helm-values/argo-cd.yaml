@@ -9,12 +9,12 @@ server:
     annotations:
       cert-manager.io/cluster-issuer: "issuer"
     hosts:
-      - labs.vettlyai.com
-      - k8s.vettlyai.com
+      - argocd.labs.vettlyai.com
+      - k8s.labs.vettlyai.com   # if you still want this too
     tls:
       - hosts:
-          - labs.vettlyai.com
-          - k8s.vettlyai.com
+          - argocd.labs.vettlyai.com
+          - k8s.labs.vettlyai.com
         secretName: wildcard-tls
 
 configs:
