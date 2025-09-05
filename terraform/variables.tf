@@ -61,4 +61,5 @@ variable "cluster_version" {
 variable "image_tag" {
   description = "Docker image tag to use in Kubernetes deployments"
   type        = string
+  default     = "latest"
 }
