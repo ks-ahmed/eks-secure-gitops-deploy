@@ -72,11 +72,11 @@ jobs:
           kubectl get ingress -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOSTS:.spec.rules[*].host,PATHS:.spec.rules[*].http.paths[*].path
 
       # Optional cleanup step (uncomment to enable)
-      # - name: Delete conflicting ingresses
-      #   run: |
-      #     kubectl delete ingress argocd-server-ingress -n argo-cd || true
-      #     kubectl delete ingress monitoring-stack-grafana -n monitoring || true
-      #     kubectl delete ingress monitoring-stack-kube-prom-prometheus -n monitoring || true
+      - name: Delete conflicting ingresses
+        run: |
+          kubectl delete ingress argocd-server-ingress -n argo-cd || true
+          kubectl delete ingress monitoring-stack-grafana -n monitoring || true
+          kubectl delete ingress monitoring-stack-kube-prom-prometheus -n monitoring || true
 
       - name: Deploy with kustomize
         run: |
