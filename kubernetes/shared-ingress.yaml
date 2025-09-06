@@ -26,33 +26,6 @@ spec:
                 port:
                   number: 80
 
----
-# ArgoCD
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: argocd-server-ingress
-  namespace: argo-cd
-  annotations:
-    cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - argocd.labs.vettlyai.com
-      secretName: wildcard-tls
-  rules:
-    - host: argocd.labs.vettlyai.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: argocd-server
-                port:
-                  number: 80
 
 ---
 # Grafana
