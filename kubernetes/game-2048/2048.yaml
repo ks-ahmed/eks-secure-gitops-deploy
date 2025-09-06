@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: game-2048
-          image: eksapp:latest
+          image: eksapp
           ports:
             - containerPort: 3000
       imagePullSecrets:
