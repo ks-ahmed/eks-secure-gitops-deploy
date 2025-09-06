@@ -14,7 +14,6 @@ on:
 env:
   AWS_REGION: eu-west-2
   CLUSTER_NAME: my-eks-cluster
-  ECR_IMAGE_BASE_URI: ${{ secrets.ECR_IMAGE_BASE_URI }}
 
 jobs:
   deploy:
@@ -60,11 +59,11 @@ jobs:
           done
 
       - name: Patch deployment image dynamically
-        env:
-          IMAGE_URI: "${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }}"
         run: |
+          IMAGE_URI="${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }}"
           echo "📌 Updating deployment image to $IMAGE_URI"
           kubectl set image deployment/game-2048 game-2048=$IMAGE_URI -n default
+
 
 
       - name: 🔍 Check for conflicting ingresses
