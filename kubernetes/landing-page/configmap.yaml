@@ -10,18 +10,18 @@ data:
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>EKS Kubernetes AI Portal</title>
+      <title>Labs AI Kubernetes Portal</title>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
         body, html {
           margin: 0;
           padding: 0;
-          font-family: 'Roboto', sans-serif;
+          font-family: 'Inter', sans-serif;
           height: 100%;
+          background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+          color: #f0f0f0;
           overflow-x: hidden;
-          color: #ffffff;
-          background: #0f2027;
         }
 
         #particles-js {
@@ -35,124 +35,114 @@ data:
 
         header {
           text-align: center;
-          padding: 60px 20px 30px 20px;
+          padding: 70px 20px 40px 20px;
         }
 
         .title-box {
           display: inline-block;
-          padding: 30px;
-          border: 3px solid #ffcc00;
-          border-radius: 15px;
-          background: linear-gradient(135deg, #1e3c72, #2a5298);
-          box-shadow: 0 0 25px rgba(255, 204, 0, 0.5);
-          max-width: 800px;
-          margin: 0 auto 30px auto;
+          padding: 35px;
+          border-radius: 20px;
+          background: rgba(255,255,255,0.05);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+          max-width: 850px;
         }
 
         header h1 {
-          font-size: 3.2em;
-          margin: 0 0 15px 0;
-          color: #ffcc00;
-          text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
+          font-size: 3.5em;
+          font-weight: 800;
+          background: linear-gradient(90deg, #ff00cc, #3333ff, #00f2fe);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 15px;
         }
 
         header p {
           font-size: 1.2em;
-          line-height: 1.6;
-          color: #f9f9f9;
+          color: #cccccc;
+          line-height: 1.7;
         }
 
         .tech-labels {
           text-align: center;
-          margin: 30px 0;
+          margin: 40px 0;
         }
 
         .tech-labels span {
           display: inline-block;
           padding: 10px 20px;
-          border-radius: 30px;
           margin: 8px;
+          border-radius: 25px;
           font-weight: 600;
-          font-size: 1em;
-          background: #111;
-          color: #fff;
-          border: 2px solid transparent;
-          background-image: linear-gradient(#111, #111), linear-gradient(45deg, #ff7f50, #1e90ff, #32cd32, #ffcc00);
-          background-origin: border-box;
-          background-clip: padding-box, border-box;
-          box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
-          transition: transform 0.3s ease;
+          font-size: 0.95em;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.2);
+          backdrop-filter: blur(6px);
+          transition: all 0.3s ease;
         }
 
         .tech-labels span:hover {
           transform: scale(1.1);
-          box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
+          background: linear-gradient(90deg, #ff00cc, #3333ff, #00f2fe);
+          color: #fff;
         }
 
         .project-desc {
           max-width: 900px;
           margin: 20px auto;
+          padding: 30px;
+          border-radius: 18px;
+          background: rgba(255,255,255,0.06);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.5);
           font-size: 1.1em;
-          line-height: 1.6;
-          background: rgba(255,255,255,0.05);
-          padding: 25px 30px;
-          border-radius: 15px;
-          box-shadow: 0 0 15px #00000033;
+          line-height: 1.7;
         }
 
         .links {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          margin: 50px 0;
+          margin: 60px 0;
           gap: 25px;
         }
 
         .card {
-          background: rgba(255,255,255,0.05);
-          border-radius: 15px;
-          width: 200px;
-          height: 120px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.15);
+          backdrop-filter: blur(8px);
+          border-radius: 20px;
+          width: 220px;
+          height: 130px;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           text-decoration: none;
           color: #fff;
-          font-size: 1.2em;
-          font-weight: bold;
-          box-shadow: 0 0 10px #00000033;
-          transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+          font-size: 1.1em;
+          font-weight: 600;
+          transition: all 0.3s ease;
         }
 
         .card:hover {
-          transform: translateY(-5px) scale(1.05);
-          background: #ffcc00;
-          color: #0f2027;
-          box-shadow: 0 10px 20px #00000066;
+          transform: translateY(-6px) scale(1.05);
+          background: linear-gradient(135deg, #ff00cc, #3333ff, #00f2fe);
+          color: #fff;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.6);
         }
 
         .card span {
-          font-size: 2em;
+          font-size: 1.8em;
           margin-bottom: 10px;
         }
 
         footer {
           text-align: center;
-          padding: 30px 20px;
+          padding: 30px;
           font-size: 0.9em;
-          color: #dddddd;
-          border-top: 1px solid #ffffff33;
-        }
-
-        @media (max-width: 600px) {
-          .card {
-            width: 90%;
-            height: 100px;
-          }
-          header h1 {
-            font-size: 2em;
-          }
+          color: #aaaaaa;
+          border-top: 1px solid rgba(255,255,255,0.1);
         }
       </style>
     </head>
@@ -161,12 +151,13 @@ data:
 
       <header>
         <div class="title-box">
-          <h1>EKS Kubernetes AI Portal</h1>
-          <p>Welcome to the Labs AI environment! Explore interactive apps, monitor metrics, and manage your EKS Kubernetes cluster efficiently through our GitOps-powered CI/CD pipelines.</p>
+          <h1>Labs AI Kubernetes Portal</h1>
+          <p>Experience a next-gen AI-driven cloud lab. From Kubernetes deployments to GitOps automation, monitoring, and observability — everything runs seamlessly on AWS EKS.</p>
         </div>
       </header>
 
       <div class="tech-labels">
+        <span>AI</span>
         <span>AWS</span>
         <span>EKS</span>
         <span>Kubernetes</span>
@@ -178,9 +169,8 @@ data:
       </div>
 
       <div class="project-desc">
-        <p>This project demonstrates a fully automated, secure, and scalable infrastructure on AWS using EKS and Kubernetes. Deployments are GitOps-driven through ArgoCD, while CI/CD pipelines leverage Terraform and GitHub Actions for continuous provisioning and deployment.</p>
-        <p>Monitoring and observability are integrated using Grafana and Prometheus. All services are accessible via a single AI-centric landing page, making it simple to explore the environment and understand the workflow from code to cloud.</p>
-        <p>Benefits include faster deployment times, infrastructure-as-code management, visibility into system health, and a unified interface for all applications.</p>
+        <p>This environment demonstrates a secure and automated AI-centric cloud platform built with Infrastructure as Code and GitOps. Using Terraform and GitHub Actions, infrastructure is provisioned and updated continuously. ArgoCD powers seamless GitOps-based deployments, while observability is achieved with Grafana and Prometheus.</p>
+        <p>All services are accessible from this unified landing page, designed for professionals exploring AI workflows, automation, and modern DevOps practices.</p>
       </div>
 
       <div class="links">
@@ -191,25 +181,24 @@ data:
       </div>
 
       <footer>
-        &copy; 2025 Labs AI Portal | Powered by EKS, Kubernetes & GitOps
+        &copy; 2025 Labs AI Cloud | Built on AWS EKS with GitOps Automation
       </footer>
 
       <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
       <script>
         particlesJS("particles-js", {
           "particles": {
-            "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
-            "color": { "value": "#ffffff" },
+            "number": { "value": 120, "density": { "enable": true, "value_area": 800 } },
+            "color": { "value": ["#ff00cc", "#3333ff", "#00f2fe"] },
             "shape": { "type": "circle" },
-            "opacity": { "value": 0.5 },
+            "opacity": { "value": 0.6 },
             "size": { "value": 2 },
-            "line_linked": { "enable": true, "distance": 120, "color": "#ffffff", "opacity": 0.4, "width": 1 },
-            "move": { "enable": true, "speed": 2 }
+            "line_linked": { "enable": true, "distance": 130, "color": "#888", "opacity": 0.4, "width": 1 },
+            "move": { "enable": true, "speed": 2.5 }
           },
           "interactivity": {
-            "detect_on": "canvas",
             "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" } },
-            "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.6 } }, "push": { "particles_nb": 4 } }
+            "modes": { "grab": { "distance": 150, "line_linked": { "opacity": 0.7 } }, "push": { "particles_nb": 5 } }
           },
           "retina_detect": true
         });

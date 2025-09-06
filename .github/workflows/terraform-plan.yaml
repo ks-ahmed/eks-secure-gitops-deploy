@@ -1,7 +1,7 @@
 name: Terraform Plan
 
 on:
-  workflow_dispatch:  # No inputs needed now
+  workflow_dispatch: 
 
 env:
   AWS_REGION: eu-west-2
