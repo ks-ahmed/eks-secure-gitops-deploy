@@ -48,6 +48,11 @@ jobs:
             kubectl delete namespace $ns || true
           done
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
       - name: 🧨 Destroy Terraform resources
         run: terraform destroy -auto-approve 
 
