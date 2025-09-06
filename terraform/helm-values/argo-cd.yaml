@@ -1,12 +1,15 @@
 server:
   service:
     type: ClusterIP
+
   ingress:
     enabled: true
     ingressClassName: "nginx"
     annotations:
       cert-manager.io/cluster-issuer: "issuer"
-    hostname: argocd.labs.vettlyai.com  # 👈 ADD THIS LINE to override default
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    hostname: argocd.labs.vettlyai.com
     hosts:
       - argocd.labs.vettlyai.com
     tls:
@@ -17,5 +20,7 @@ server:
 configs:
   cm:
     admin.enabled: "true"
+    url: https://argocd.labs.vettlyai.com  # Used in UI links, Git webhook callbacks, etc.
+
   rbac:
     defaultPolicy: role:admin

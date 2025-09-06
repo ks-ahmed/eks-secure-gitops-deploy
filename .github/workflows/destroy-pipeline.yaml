@@ -1,4 +1,4 @@
-name: Full EKS Teardown
+name: Full Teardown
 
 on:
   workflow_dispatch:

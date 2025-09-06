@@ -1,4 +1,4 @@
-name: Kubernetes Kustomize Multi-Namespace Deploy
+name: K8s Deploy
 
 on:
   workflow_dispatch:
@@ -17,88 +17,67 @@ env:
 
 jobs:
   deploy:
-    name: Deploy via Kustomize
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚫 Confirm deployment
+      - name: Confirm deployment
         run: |
           if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
-            echo "❌ Deployment cancelled."
+            echo " Deployment cancelled."
             exit 1
           fi
 
-      - name: 📦 Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: 🔐 Configure AWS credentials
+      - name: AWS auth
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: ☁️ Update kubeconfig
+      - name: Configure kubeconfig
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      - name: 🛠️ Install kustomize
+      - name: Install Kustomize
         run: |
           curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest \
             | grep browser_download_url \
             | grep linux \
             | cut -d '"' -f 4 \
-            | xargs curl -sL \
-            | tar xz \
-            && sudo mv kustomize /usr/local/bin/
+            | xargs curl -sL | tar xz
+          sudo mv kustomize /usr/local/bin/
 
-      - name: 📂 Ensure required namespaces exist
+      - name: Create namespaces (if missing)
         run: |
           for ns in landing-page monitoring argo-cd cert-manager; do
-            echo "📁 Ensuring namespace '$ns' exists..."
             kubectl get ns $ns >/dev/null 2>&1 || kubectl create ns $ns
           done
 
-      - name: Patch deployment image dynamically
+      - name: Update 2048 image
         run: |
-          IMAGE_URI="${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }}"
-          echo "📌 Updating deployment image to $IMAGE_URI"
-          kubectl set image deployment/game-2048 game-2048=$IMAGE_URI -n default
+          IMAGE="${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }}"
+          kubectl set image deployment/game-2048 game-2048=$IMAGE -n default
 
+      - name: Ingress overview
+        run: kubectl get ingress -A -o wide
 
+      - name: Apply manifests
+        run: kustomize build . | kubectl apply -f -
 
-      - name: 🔍 Check for conflicting ingresses
-        run: |
-          echo "🔎 Ingress overview:"
-          kubectl get ingress -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOSTS:.spec.rules[*].host,PATHS:.spec.rules[*].http.paths[*].path
-
-      - name: 🚀 Deploy manifests with Kustomize
-        run: |
-          kustomize build . | kubectl apply -f -
-
-      - name: 🕒 Wait for all deployments to roll out
+      - name: Wait for rollouts
         run: |
           for ns in default landing-page argo-cd monitoring; do
-            echo "🔄 Checking deployments in namespace: $ns"
-            deployments=$(kubectl get deploy -n $ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null)
-            for dep in $deployments; do
-              echo "⏳ Waiting for rollout: $dep"
-              kubectl rollout status deployment/$dep -n $ns --timeout=300s || {
-                echo "❌ Rollout failed for $dep in $ns"
-                exit 1
-              }
+            for dep in $(kubectl get deploy -n $ns -o name); do
+              kubectl rollout status $dep -n $ns --timeout=300s || exit 1
             done
           done
 
-      - name: 🔐 Wait for TLS certificates
+      - name: Wait for TLS certificates
         run: |
           for ns in default landing-page argo-cd monitoring cert-manager; do
-            certs=$(kubectl get certificates -n $ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null)
-            for cert in $certs; do
-              echo "📄 Waiting for certificate: $cert in $ns"
-              kubectl wait --for=condition=Ready certificate/$cert -n $ns --timeout=300s || {
-                echo "❌ Certificate $cert in $ns not ready"
-                exit 1
-              }
+            for cert in $(kubectl get certificates -n $ns -o name 2>/dev/null); do
+              kubectl wait --for=condition=Ready $cert -n $ns --timeout=300s || exit 1
             done
           done
-          echo "✅ All certificates are ready!"
