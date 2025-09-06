@@ -19,5 +19,3 @@ configs:
   rbac:
     defaultPolicy: role:admin
 
-global:
-  domain: labs.vettlyai.com
