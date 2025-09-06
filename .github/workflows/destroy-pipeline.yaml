@@ -8,46 +8,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 📦 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-      - name: Update kubeconfig
+      - name: ☁️ Update kubeconfig
         run: aws eks update-kubeconfig --region eu-west-2 --name my-eks-cluster
 
-      - name: Uninstall all Helm releases
+      - name: 🧹 Uninstall all Helm releases
         run: |
-          echo "Deleting all Helm releases..."
-          helm list -A -q | while read release; do
-            ns=$(helm list -A --filter "^$release$" -q -o json | jq -r '.[0].Namespace')
-            echo "Uninstalling Helm release $release in namespace $ns"
-            helm uninstall "$release" -n "$ns"
-          done
+          echo "🔍 Fetching all Helm releases..."
+          releases=$(helm list -A -o json)
 
-      - name: Delete app-related namespaces
+          if echo "$releases" | jq empty 2>/dev/null; then
+            echo "$releases" | jq -r '.[] | "\(.name) \(.namespace)"' | while read name ns; do
+              echo "🗑️ Uninstalling release $name from namespace $ns"
+              helm uninstall "$name" -n "$ns"
+            done
+          else
+            echo "⚠️ No valid Helm releases found or cluster unreachable"
+            echo "$releases"
+          fi
+
+      - name: ❌ Delete app-related namespaces
         run: |
           namespaces=("default" "landing-page" "argo-cd" "monitoring")
           for ns in "${namespaces[@]}"; do
-            echo "Deleting all resources in namespace: $ns"
+            echo "📁 Cleaning up namespace: $ns"
             kubectl delete all --all -n $ns || true
             kubectl delete pvc --all -n $ns || true
             kubectl delete configmap --all -n $ns || true
             kubectl delete secret --all -n $ns || true
-            echo "Deleting namespace: $ns"
             kubectl delete namespace $ns || true
           done
 
-      - name: Destroy Terraform resources
-        run: |
-          terraform destroy -auto-approve || true
+      - name: 🧨 Destroy Terraform resources
+        run: terraform destroy -auto-approve 
 
-      - name: Delete EKS cluster (optional)
+      - name: 🧼 Delete EKS cluster (optional)
         run: |
-          echo "Deleting EKS cluster (if still exists)..."
+          echo "🧹 Deleting EKS cluster (if it still exists)..."
           aws eks delete-cluster --name my-eks-cluster --region eu-west-2 || true
