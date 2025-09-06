@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: game-2048
-          image: eksapp
+          image: 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp:latest
           ports:
             - containerPort: 3000
       imagePullSecrets:
