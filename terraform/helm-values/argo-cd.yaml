@@ -6,6 +6,7 @@ server:
     ingressClassName: "nginx"
     annotations:
       cert-manager.io/cluster-issuer: "issuer"
+    hostname: argocd.labs.vettlyai.com  # 👈 ADD THIS LINE to override default
     hosts:
       - argocd.labs.vettlyai.com
     tls:
@@ -18,4 +19,3 @@ configs:
     admin.enabled: "true"
   rbac:
     defaultPolicy: role:admin
-
