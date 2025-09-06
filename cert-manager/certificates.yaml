@@ -2,37 +2,12 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-tls
-  namespace: argo-cd
+  namespace: cert-manager
 spec:
   secretName: wildcard-tls
   dnsNames:
     - "*.labs.vettlyai.com"
-  issuerRef:
-    name: issuer
-    kind: ClusterIssuer
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: wildcard-tls
-  namespace: monitoring
-spec:
-  secretName: wildcard-tls
-  dnsNames:
-    - "*.labs.vettlyai.com"
-  issuerRef:
-    name: issuer
-    kind: ClusterIssuer
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: wildcard-tls
-  namespace: default
-spec:
-  secretName: wildcard-tls
-  dnsNames:
-    - "*.labs.vettlyai.com"
+    - "labs.vettlyai.com"
   issuerRef:
     name: issuer
     kind: ClusterIssuer
