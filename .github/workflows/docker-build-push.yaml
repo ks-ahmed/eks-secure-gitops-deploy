@@ -1,4 +1,4 @@
-name: Docker - ECR 
+name: Docker -> ECR
 
 on:
   workflow_dispatch:

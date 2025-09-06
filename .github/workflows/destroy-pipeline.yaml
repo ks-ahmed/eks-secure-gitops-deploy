@@ -8,39 +8,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🔐 Configure AWS credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-      - name: ☁️ Update kubeconfig
+      - name: Update kubeconfig
         run: aws eks update-kubeconfig --region eu-west-2 --name my-eks-cluster
 
-      - name: 🧹 Uninstall all Helm releases
+      - name: Uninstall all Helm releases
         run: |
-          echo "🔍 Fetching all Helm releases..."
+          echo "Fetching all Helm releases..."
           releases=$(helm list -A -o json)
 
           if echo "$releases" | jq empty 2>/dev/null; then
             echo "$releases" | jq -r '.[] | "\(.name) \(.namespace)"' | while read name ns; do
-              echo "🗑️ Uninstalling release $name from namespace $ns"
+              echo "Uninstalling release $name from namespace $ns"
               helm uninstall "$name" -n "$ns"
             done
           else
-            echo "⚠️ No valid Helm releases found or cluster unreachable"
+            echo "No valid Helm releases found or cluster unreachable"
             echo "$releases"
           fi
 
-      - name: ❌ Delete app-related namespaces
+      - name: Delete app-related namespaces
         run: |
           namespaces=("default" "landing-page" "argo-cd" "monitoring")
           for ns in "${namespaces[@]}"; do
-            echo "📁 Cleaning up namespace: $ns"
+            echo "Cleaning up namespace: $ns"
             kubectl delete all --all -n $ns || true
             kubectl delete pvc --all -n $ns || true
             kubectl delete configmap --all -n $ns || true
@@ -48,21 +48,21 @@ jobs:
             kubectl delete namespace $ns || true
           done
 
-      - name: ⬇️ Setup Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
 
-      - name: 🔧 Terraform Init
+      - name: Terraform Init
         working-directory: terraform
         run: terraform init
 
-      - name: 🧨 Terraform Destroy
+      - name: Terraform Destroy
         working-directory: terraform
         run: terraform destroy -auto-approve
 
 
-      - name: 🧼 Delete EKS cluster (optional)
+      - name: Delete EKS cluster (optional)
         run: |
-          echo "🧹 Deleting EKS cluster (if it still exists)..."
+          echo "Deleting EKS cluster (if it still exists)..."
           aws eks delete-cluster --name my-eks-cluster --region eu-west-2 || true
