@@ -14,7 +14,7 @@ on:
 env:
   AWS_REGION: eu-west-2
   CLUSTER_NAME: my-eks-cluster
-  ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/eksapp
+  ECR_IMAGE_BASE_URI: ${{ secrets.ECR_IMAGE_BASE_URI }}
 
 jobs:
   deploy:
@@ -22,27 +22,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Confirm deployment
+      - name: 🚫 Confirm deployment
         run: |
           if [ "${{ github.event.inputs.confirmation }}" != "yes" ]; then
             echo "❌ Deployment cancelled."
             exit 1
           fi
 
-      - name: Checkout repository
+      - name: 📦 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Update kubeconfig
+      - name: ☁️ Update kubeconfig
         run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-      - name: Install kustomize
+      - name: 🛠️ Install kustomize
         run: |
           curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest \
             | grep browser_download_url \
@@ -52,39 +52,35 @@ jobs:
             | tar xz \
             && sudo mv kustomize /usr/local/bin/
 
-      - name: Ensure required namespaces exist
+      - name: 📂 Ensure required namespaces exist
         run: |
-          namespaces=("landing-page" "monitoring" "argo-cd" "cert-manager")
-          for ns in "${namespaces[@]}"; do
-            echo "📦 Ensuring namespace '$ns' exists..."
-            kubectl get namespace $ns >/dev/null 2>&1 || kubectl create namespace $ns
+          for ns in landing-page monitoring argo-cd cert-manager; do
+            echo "📁 Ensuring namespace '$ns' exists..."
+            kubectl get ns $ns >/dev/null 2>&1 || kubectl create ns $ns
           done
 
-      - name: Patch deployment image dynamically
+      - name: 🧬 Patch deployment image dynamically
         run: |
-          IMAGE_URI="${ECR_REPO}:${{ github.event.inputs.image_tag }}"
+          IMAGE_URI="${ECR_IMAGE_BASE_URI}:${{ github.event.inputs.image_tag }}"
           echo "📌 Updating deployment image to $IMAGE_URI"
           kubectl set image deployment/game-2048 game-2048=$IMAGE_URI -n default
 
-      - name: Check for conflicting ingresses (optional)
+      - name: 🔍 Check for conflicting ingresses
         run: |
-          echo "🔍 Checking for ingress conflicts..."
+          echo "🔎 Ingress overview:"
           kubectl get ingress -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOSTS:.spec.rules[*].host,PATHS:.spec.rules[*].http.paths[*].path
 
-      - name: Deploy with Kustomize
+      - name: 🚀 Deploy manifests with Kustomize
         run: |
-          echo "🚀 Deploying manifests..."
           kustomize build . | kubectl apply -f -
 
-      - name: Wait for all deployments in relevant namespaces
+      - name: 🕒 Wait for all deployments to roll out
         run: |
-          echo "🕒 Waiting for all deployments to roll out..."
-          namespaces=("default" "landing-page" "argo-cd" "monitoring")
-          for ns in "${namespaces[@]}"; do
-            echo "🔄 Namespace: $ns"
+          for ns in default landing-page argo-cd monitoring; do
+            echo "🔄 Checking deployments in namespace: $ns"
             deployments=$(kubectl get deploy -n $ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null)
             for dep in $deployments; do
-              echo "➡️ Waiting for rollout of: $dep"
+              echo "⏳ Waiting for rollout: $dep"
               kubectl rollout status deployment/$dep -n $ns --timeout=300s || {
                 echo "❌ Rollout failed for $dep in $ns"
                 exit 1
@@ -92,16 +88,14 @@ jobs:
             done
           done
 
-      - name: Wait for TLS certificates
+      - name: 🔐 Wait for TLS certificates
         run: |
-          echo "🔐 Waiting for CertManager certificates to be ready..."
-          namespaces=("default" "landing-page" "argo-cd" "monitoring" "cert-manager")
-          for ns in "${namespaces[@]}"; do
+          for ns in default landing-page argo-cd monitoring cert-manager; do
             certs=$(kubectl get certificates -n $ns -o custom-columns=NAME:.metadata.name --no-headers 2>/dev/null)
             for cert in $certs; do
               echo "📄 Waiting for certificate: $cert in $ns"
               kubectl wait --for=condition=Ready certificate/$cert -n $ns --timeout=300s || {
-                echo "❌ Certificate $cert in $ns did not become ready"
+                echo "❌ Certificate $cert in $ns not ready"
                 exit 1
               }
             done
