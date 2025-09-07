@@ -1,7 +1,7 @@
 name: Terraform Plan
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 env:
   AWS_REGION: eu-west-2
@@ -32,7 +32,7 @@ jobs:
         with:
           tflint_version: v0.50.3
 
-      - name: Terraform Init 
+      - name: Terraform Init
         working-directory: terraform
         run: terraform init
 
@@ -46,13 +46,21 @@ jobs:
 
       - name: Terraform Plan
         working-directory: terraform
-        run: |
-          terraform plan -out=tfplan
-      
+        run: terraform plan -out=tfplan
+
+      - name: Convert Plan to Human-Readable Format
+        working-directory: terraform
+        run: terraform show -no-color tfplan > tfplan.txt
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: terraform/tfplan.txt
+
       - name: Upload tfplan to S3
         env:
           AWS_REGION: ${{ env.AWS_REGION }}
           BUCKET_NAME: eks-secure-gitops-tfstate
         run: |
           aws s3 cp terraform/tfplan s3://$BUCKET_NAME/tfplan
-
