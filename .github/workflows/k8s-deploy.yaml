@@ -63,21 +63,25 @@ jobs:
       - name: Ingress overview
         run: kubectl get ingress -A -o wide
 
-      - name: Apply manifests
-        run: kustomize build . | kubectl apply -f -
-
-      - name: Wait for rollouts
+      - name: Apply certificates
         run: |
-          for ns in default landing-page argo-cd monitoring; do
-            for dep in $(kubectl get deploy -n $ns -o name); do
-              kubectl rollout status $dep -n $ns --timeout=300s || exit 1
-            done
-          done
+          kustomize build ./cert-manager | kubectl apply -f - 
 
       - name: Wait for TLS certificates
         run: |
           for ns in default landing-page argo-cd monitoring cert-manager; do
             for cert in $(kubectl get certificates -n $ns -o name 2>/dev/null); do
               kubectl wait --for=condition=Ready $cert -n $ns --timeout=300s || exit 1
+            done
+          done
+
+      - name: Apply and Deploy manifests
+        run: kustomize build ./ingress | kubectl apply -f -
+
+      - name: Wait for rollouts
+        run: |
+          for ns in default landing-page argo-cd monitoring; do
+            for dep in $(kubectl get deploy -n $ns -o name); do
+              kubectl rollout status $dep -n $ns --timeout=300s || exit 1
             done
           done
