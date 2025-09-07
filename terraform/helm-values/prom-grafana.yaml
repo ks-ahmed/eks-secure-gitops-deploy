@@ -5,7 +5,7 @@ prometheus:
     enabled: true
     ingressClassName: "nginx"
     annotations:
-      nginx.org/hsts: "false"
+      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     hosts:
@@ -22,7 +22,7 @@ grafana:
     enabled: true
     ingressClassName: "nginx"
     annotations:
-      nginx.org/hsts: "false"
+      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     hosts:
