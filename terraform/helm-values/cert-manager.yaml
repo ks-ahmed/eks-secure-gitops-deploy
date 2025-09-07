@@ -9,5 +9,5 @@ serviceAccount:
   create: true
   name: cert-manager
   annotations:
-    # Use the IRSA role ARN from Terraform
+    # Use the IRSA role ARN from Terraforms
     eks.amazonaws.com/role-arn: "${cert_manager_role_arn}"
