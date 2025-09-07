@@ -76,7 +76,7 @@ jobs:
           done
 
       - name: Apply and Deploy manifests
-        run: kustomize build ./ingress | kubectl apply -f -
+        run: kustomize build . | kubectl apply -f -
 
       - name: Wait for rollouts
         run: |
