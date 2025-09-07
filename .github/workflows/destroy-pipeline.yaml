@@ -61,7 +61,6 @@ jobs:
         working-directory: terraform
         run: terraform destroy -auto-approve
 
-
       - name: Delete EKS cluster (optional)
         run: |
           echo "Deleting EKS cluster (if it still exists)..."
