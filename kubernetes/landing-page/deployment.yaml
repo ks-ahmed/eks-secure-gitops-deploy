@@ -23,3 +23,17 @@ spec:
         - name: html
           configMap:
             name: landing-page-html
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: landing-page
+  namespace: landing-page
+spec:
+  selector:
+    app: landing-page
+  ports:
+    - port: 80
+      targetPort: 80
+
