@@ -15,6 +15,10 @@ spec:
       labels:
         app: game-2048
     spec:
+      securityContext:
+        runAsUser: 1000  # Non-root user ID
+        runAsGroup: 1000 # Non-root group ID
+        fsGroup: 1000    # Group ID for file system
       containers:
         - name: game-2048
           image: 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp:latest
@@ -22,18 +26,3 @@ spec:
             - containerPort: 3000
       imagePullSecrets:
         - name: ecr-secret
-
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: game-2048
-  namespace: default
-spec:
-  selector:
-    app: game-2048
-  ports:
-    - port: 80          # what Ingress sees
-      targetPort: 3000  # what container listens on
-  type: ClusterIP
