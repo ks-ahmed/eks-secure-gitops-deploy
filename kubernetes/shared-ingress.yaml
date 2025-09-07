@@ -13,7 +13,6 @@ spec:
   tls:
     - hosts:
         - labs.vettlyai.com
-      secretName: wildcard-tls
   rules:
     - host: labs.vettlyai.com
       http:
@@ -42,7 +41,6 @@ spec:
   tls:
     - hosts:
         - 2048.labs.vettlyai.com
-      secretName: wildcard-tls
   rules:
     - host: 2048.labs.vettlyai.com
       http:

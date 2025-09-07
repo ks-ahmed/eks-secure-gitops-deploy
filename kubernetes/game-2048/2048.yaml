@@ -26,3 +26,19 @@ spec:
             - containerPort: 3000
       imagePullSecrets:
         - name: ecr-secret
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-2048
+  namespace: default
+spec:
+  selector:
+    app: game-2048
+  ports:
+    - port: 80          # what Ingress sees
+      targetPort: 3000  # what container listens on
+  type: ClusterIP
