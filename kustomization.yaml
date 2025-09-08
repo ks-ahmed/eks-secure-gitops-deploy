@@ -1,3 +1,7 @@
 resources:
   - argocd/
   - kubernetes/
+
+images:
+  - name: 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp
+    newTag: PLACEHOLDER_TAG

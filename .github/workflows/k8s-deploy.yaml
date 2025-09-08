@@ -55,11 +55,6 @@ jobs:
             kubectl get ns $ns >/dev/null 2>&1 || kubectl create ns $ns
           done
 
-      - name: Update 2048 image
-        run: |
-          IMAGE="${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }}"
-          kubectl set image deployment/game-2048 game-2048=$IMAGE -n default
-
       - name: Ingress overview
         run: kubectl get ingress -A -o wide
 
@@ -76,7 +71,11 @@ jobs:
           done
 
       - name: Apply and Deploy manifests
-        run: kustomize build . | kubectl apply -f -
+        run: |
+          kustomize build . \
+            --load-restrictor=LoadRestrictionsNone \
+            --image 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp=${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }} \
+          | kubectl apply -f -
 
       - name: Wait for rollouts
         run: |
