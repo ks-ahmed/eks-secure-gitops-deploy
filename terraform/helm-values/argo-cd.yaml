@@ -15,6 +15,7 @@ server:
     tls:
       - hosts:
           - argocd.labs.vettlyai.com
+        secretName: wildcard-tls
 
 configs:
   cm:

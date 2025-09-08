@@ -13,6 +13,7 @@ prometheus:
     tls:
       - hosts:
           - prometheus.labs.vettlyai.com
+        secretName: wildcard-tls
 
 grafana:
   service:
@@ -29,3 +30,4 @@ grafana:
     tls:
       - hosts:
           - grafana.labs.vettlyai.com
+        secretName: wildcard-tls
