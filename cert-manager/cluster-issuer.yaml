@@ -4,16 +4,18 @@ metadata:
   name: issuer
 spec:
   acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    email: ka.sharif01@gmail.com
+    server: "https://acme-v02.api.letsencrypt.org/directory"
+    email: "ka-sharif@outlook.com"
     privateKeySecretRef:
-      name: wildcard-issuer-key
+      name: issuer
     solvers:
-      - dns01:
-          route53:
-            hostedZoneID: Z00176861AUERXFO9TXIH
-            region: eu-west-2
-      - dns01:
-          route53:
-            hostedZoneID: Z026106921D2B7DLNBJXV
-            region: eu-west-2
+    - dns01:
+        route53:
+          hostedZoneID: Z00176861AUERXFO9TXIH
+          region: eu-west-2
+      selector:
+        dnsZones:
+        - labs.vettlyai.com
+    - http01:
+        ingress:
+          class: nginx
