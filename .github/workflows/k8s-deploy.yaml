@@ -49,9 +49,9 @@ jobs:
             | xargs curl -sL | tar xz
           sudo mv kustomize /usr/local/bin/
 
-      - name: Create namespaces (if missing)
+      - name: Create required namespaces
         run: |
-          for ns in landing-page monitoring argo-cd cert-manager; do
+          for ns in ingress-nginx cert-manager landing-page argo-cd monitoring default; do
             kubectl get ns $ns >/dev/null 2>&1 || kubectl create ns $ns
           done
 
