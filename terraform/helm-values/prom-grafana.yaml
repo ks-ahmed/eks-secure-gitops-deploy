@@ -1,14 +1,16 @@
 prometheus:
   service:
     type: ClusterIP
-    port: 9090      # explicitly specify the service port here
+
   ingress:
     enabled: true
     ingressClassName: "nginx"
     annotations:
-      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+    hostname: prometheus.labs.vettlyai.com
     hosts:
       - prometheus.labs.vettlyai.com
     tls:
@@ -21,14 +23,17 @@ prometheus:
 grafana:
   service:
     type: ClusterIP
-    port: 80        # explicitly specify the service port here
+    
   ingress:
     enabled: true
     ingressClassName: "nginx"
     annotations:
-      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+    hostname: grafana.labs.vettlyai.com
     hosts:
       - grafana.labs.vettlyai.com
     tls:
