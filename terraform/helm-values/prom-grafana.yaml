@@ -7,7 +7,7 @@ prometheus:
     annotations:
       nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
     hosts:
       - prometheus.labs.vettlyai.com
     tls:
@@ -24,7 +24,7 @@ grafana:
     annotations:
       nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
     hosts:
       - grafana.labs.vettlyai.com
     tls:
