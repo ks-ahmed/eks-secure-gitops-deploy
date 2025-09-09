@@ -7,7 +7,7 @@ metadata:
   namespace: landing-page
   annotations:
     cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -35,7 +35,7 @@ metadata:
   namespace: argo-cd
   annotations:
     cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -63,7 +63,7 @@ metadata:
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -91,7 +91,7 @@ metadata:
   namespace: monitoring
   annotations:
     cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -119,7 +119,7 @@ metadata:
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: issuer
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
