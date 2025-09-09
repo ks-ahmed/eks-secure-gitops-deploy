@@ -1,6 +1,7 @@
 server:
   service:
     type: ClusterIP
+    port: 80   # explicitly specifying the service port
 
   ingress:
     enabled: true

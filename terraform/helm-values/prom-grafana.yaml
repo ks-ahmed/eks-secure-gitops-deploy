@@ -1,6 +1,7 @@
 prometheus:
   service:
     type: ClusterIP
+    port: 9090      # explicitly specify the service port here
   ingress:
     enabled: true
     ingressClassName: "nginx"
@@ -15,9 +16,12 @@ prometheus:
           - prometheus.labs.vettlyai.com
         secretName: wildcard-tls
 
+    
+
 grafana:
   service:
     type: ClusterIP
+    port: 80        # explicitly specify the service port here
   ingress:
     enabled: true
     ingressClassName: "nginx"
@@ -31,3 +35,4 @@ grafana:
       - hosts:
           - grafana.labs.vettlyai.com
         secretName: wildcard-tls
+
