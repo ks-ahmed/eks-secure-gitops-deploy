@@ -81,11 +81,11 @@ jobs:
           kubectl annotate secret wildcard-tls -n ingress-nginx kubed.appscode.com/sync="true" --overwrite
 
 
-      
+      - name: Set image dynamically in Kustomize
+        run: |
+          kustomize edit set image eksapp=957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp:${{ github.event.inputs.image_tag }}
+
       - name: Apply and Deploy manifests
         run: |
-          kustomize build . \
-            --load-restrictor=LoadRestrictionsNone \
-            --image 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp=${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }} \
-          | kubectl apply -f -
+          kustomize build . | kubectl apply -f -
 
