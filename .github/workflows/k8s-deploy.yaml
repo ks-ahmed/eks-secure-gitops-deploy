@@ -55,21 +55,26 @@ jobs:
             kubectl get ns $ns >/dev/null 2>&1 || kubectl create ns $ns
           done
 
-      - name: Ingress overview
-        run: kubectl get ingress -A -o wide
 
-      - name: Apply certificates
+      - name: Apply certificate
         run: |
-          kustomize build ./cert-manager | kubectl apply -f - 
+          kustomize build ./cert-manager | kubectl apply -f -
 
-      - name: Wait for TLS certificates
+
+      - name: Install Kubed for Secret Syncing
         run: |
-          for ns in default landing-page argo-cd monitoring cert-manager; do
-            for cert in $(kubectl get certificates -n $ns -o name 2>/dev/null); do
-              kubectl wait --for=condition=Ready $cert -n $ns --timeout=300s || exit 1
-            done
-          done
+          helm repo add appscode https://charts.appscode.com/stable/
+          helm repo update
+          helm upgrade --install kubed appscode/kubed \
+            --namespace kube-system \
+            --create-namespace \
+            --set secretSync.enabled=true
 
+      - name: Annotate wildcard TLS secret for Kubed sync
+        run: |
+          kubectl annotate secret wildcard-tls -n ingress-nginx kubed.appscode.com/sync="true" --overwrite
+
+      
       - name: Apply and Deploy manifests
         run: |
           kustomize build . \
@@ -77,10 +82,3 @@ jobs:
             --image 957045488159.dkr.ecr.eu-west-2.amazonaws.com/eksapp=${{ secrets.ECR_IMAGE_BASE_URI }}:${{ github.event.inputs.image_tag }} \
           | kubectl apply -f -
 
-      - name: Wait for rollouts
-        run: |
-          for ns in default landing-page argo-cd monitoring; do
-            for dep in $(kubectl get deploy -n $ns -o name); do
-              kubectl rollout status $dep -n $ns --timeout=300s || exit 1
-            done
-          done
