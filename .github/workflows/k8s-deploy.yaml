@@ -70,9 +70,16 @@ jobs:
             --create-namespace \
             --set secretSync.enabled=true
 
+
+      - name: Wait for wildcard-tls secret
+        run: |
+          echo "Waiting for wildcard-tls certificate to be ready..."
+          kubectl wait --for=condition=Ready certificate/wildcard-tls -n ingress-nginx --timeout=300s
+
       - name: Annotate wildcard TLS secret for Kubed sync
         run: |
           kubectl annotate secret wildcard-tls -n ingress-nginx kubed.appscode.com/sync="true" --overwrite
+
 
       
       - name: Apply and Deploy manifests
