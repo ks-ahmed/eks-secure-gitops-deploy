@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-tls
-  namespace: ingress-nginx   
+  namespace: argo-cd
 spec:
   secretName: wildcard-tls
   dnsNames:
@@ -11,7 +11,6 @@ spec:
   issuerRef:
     name: issuer
     kind: ClusterIssuer
-
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -20,13 +19,37 @@ metadata:
   namespace: monitoring
 spec:
   secretName: wildcard-tls
-  issuerRef:
-    name: issuer
-    kind: ClusterIssuer
-  commonName: "*.labs.vettlyai.com"
   dnsNames:
     - "*.labs.vettlyai.com"
     - "labs.vettlyai.com"
-    - "prometheus.labs.vettlyai.com"  # Optional, but safe
-
-
+  issuerRef:
+    name: issuer
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-tls
+  namespace: default
+spec:
+  secretName: wildcard-tls
+  dnsNames:
+    - "*.labs.vettlyai.com"
+    - "labs.vettlyai.com"
+  issuerRef:
+    name: issuer
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-tls
+  namespace: landing-page
+spec:
+  secretName: wildcard-tls
+  dnsNames:
+    - "*.labs.vettlyai.com"
+    - "labs.vettlyai.com"
+  issuerRef:
+    name: issuer
+    kind: ClusterIssuer
