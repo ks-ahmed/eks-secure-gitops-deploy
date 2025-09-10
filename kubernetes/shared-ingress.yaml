@@ -36,7 +36,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"    # <--- add this
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"    # <--- add this
 spec:
   ingressClassName: nginx
   tls:
