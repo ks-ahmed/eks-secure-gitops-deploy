@@ -3,14 +3,11 @@ server:
     type: ClusterIP
 
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: "nginx"
     annotations:
       cert-manager.io/cluster-issuer: "issuer"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
     hostname: argocd.labs.vettlyai.com
     hosts:
       - argocd.labs.vettlyai.com
@@ -18,7 +15,3 @@ server:
       - hosts:
           - argocd.labs.vettlyai.com
         secretName: wildcard-tls
-    extraPaths: []
-    paths:
-      - path: /
-        pathType: Prefix

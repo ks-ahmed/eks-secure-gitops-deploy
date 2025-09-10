@@ -1,43 +1,35 @@
 prometheus:
   service:
     type: ClusterIP
-
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: "nginx"
     annotations:
+      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-    hostname: prometheus.labs.vettlyai.com
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
     hosts:
       - prometheus.labs.vettlyai.com
     tls:
       - hosts:
           - prometheus.labs.vettlyai.com
         secretName: wildcard-tls
-
     
 
 grafana:
   service:
     type: ClusterIP
-    
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: "nginx"
     annotations:
+      nginx.org/hsts: "true"
       cert-manager.io/cluster-issuer: "issuer"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-    hostname: grafana.labs.vettlyai.com
     hosts:
       - grafana.labs.vettlyai.com
     tls:
       - hosts:
           - grafana.labs.vettlyai.com
         secretName: wildcard-tls
-
+    
