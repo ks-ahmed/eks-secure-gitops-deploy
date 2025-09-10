@@ -17,12 +17,16 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-tls
-  namespace: monitoring   # use the namespace where you want the secret
+  namespace: monitoring
 spec:
   secretName: wildcard-tls
-  dnsNames:
-    - "grafana.labs.vettlyai.com"
-    - "prometheus.labs.vettlyai.com"
   issuerRef:
-    name: issuer           # your ClusterIssuer name
+    name: issuer
     kind: ClusterIssuer
+  commonName: "*.labs.vettlyai.com"
+  dnsNames:
+    - "*.labs.vettlyai.com"
+    - "labs.vettlyai.com"
+    - "prometheus.labs.vettlyai.com"  # Optional, but safe
+
+

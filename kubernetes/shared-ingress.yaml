@@ -90,8 +90,11 @@ kind: Ingress
 metadata:
   name: prometheus-ingress
   namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: "nginx"                     # Tell Kubernetes which ingress controller to use
+    cert-manager.io/cluster-issuer: "issuer"                 # Tell cert-manager which ClusterIssuer to use for certs
+    nginx.org/hsts: "true"                                    # Your HSTS setting
 spec:
-  ingressClassName: nginx
   rules:
   - host: prometheus.labs.vettlyai.com
     http:
@@ -105,8 +108,9 @@ spec:
               number: 9090
   tls:
   - hosts:
-    - prometheus.labs.mustafamirreh.com
+    - prometheus.labs.vettlyai.com
     secretName: wildcard-tls
+
 
 
 ---
