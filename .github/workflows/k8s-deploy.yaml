@@ -68,7 +68,8 @@ jobs:
           helm upgrade --install kubed appscode/kubed \
             --namespace kube-system \
             --create-namespace \
-            --set secretSync.enabled=true
+            --set secretSync.enabled=true \
+            --set image.tag=v0.12.0
 
 
       - name: Wait for wildcard-tls secret
