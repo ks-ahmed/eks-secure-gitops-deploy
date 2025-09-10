@@ -27,8 +27,7 @@ spec:
                   number: 80
 
 ---
-# ArgoCD
-apiVersion: networking.k8s.io/v1
+# apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: argocd-server-ingress
@@ -36,6 +35,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: issuer
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"    # <--- add this
 spec:
   ingressClassName: nginx
   tls:
@@ -53,6 +53,7 @@ spec:
                 name: argocd-server
                 port:
                   number: 80
+
 
 ---
 # Grafana

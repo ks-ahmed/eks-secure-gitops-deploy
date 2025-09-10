@@ -7,10 +7,10 @@ server:
     ingressClassName: "nginx"
     annotations:
       cert-manager.io/cluster-issuer: "issuer"
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    hostname: argocd.labs.vettlyai.com
+
     hosts:
       - argocd.labs.vettlyai.com
+
     tls:
       - hosts:
           - argocd.labs.vettlyai.com
